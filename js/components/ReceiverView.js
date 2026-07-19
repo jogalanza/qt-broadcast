@@ -82,13 +82,11 @@ export default {
       <div
         v-show="!waiting"
         ref="containerEl"
-        class="w-[96vw] overflow-hidden"
-        style="height: calc(2 * 1.15 * clamp(3.5rem, 14vw, 11rem)); line-height: 1.15;"
+        class="receiver-window w-[96vw] overflow-hidden"
       >
         <div
           ref="innerEl"
-          class="text-white font-bold whitespace-normal"
-          style="font-size: clamp(3.5rem, 14vw, 11rem); line-height: 1.15; will-change: transform;"
+          class="receiver-text text-white font-bold whitespace-normal"
         ></div>
       </div>
     </div>
