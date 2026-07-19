@@ -92,6 +92,25 @@ export default {
           <button @click="format('bold')" class="h-9 w-9 rounded-md font-bold hover:bg-slate-800">B</button>
           <button @click="format('italic')" class="h-9 w-9 rounded-md italic hover:bg-slate-800">I</button>
           <button @click="format('underline')" class="h-9 w-9 rounded-md underline hover:bg-slate-800">U</button>
+
+          <div class="w-px h-6 bg-white/10"></div>
+
+          <button @click="format('justifyLeft')" class="h-9 w-9 rounded-md hover:bg-slate-800 flex items-center justify-center" aria-label="Align left">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" d="M4 6h16M4 12h10M4 18h14" />
+            </svg>
+          </button>
+          <button @click="format('justifyCenter')" class="h-9 w-9 rounded-md hover:bg-slate-800 flex items-center justify-center" aria-label="Align center">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" d="M4 6h16M7 12h10M5 18h14" />
+            </svg>
+          </button>
+          <button @click="format('justifyRight')" class="h-9 w-9 rounded-md hover:bg-slate-800 flex items-center justify-center" aria-label="Align right">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" d="M4 6h16M10 12h10M6 18h14" />
+            </svg>
+          </button>
+
           <div class="ml-auto flex items-center gap-2 text-sm">
             <span class="text-slate-400">Background</span>
             <input v-model="bgColor" type="color" class="h-8 w-10 cursor-pointer rounded bg-transparent" />
