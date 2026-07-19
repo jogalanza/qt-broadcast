@@ -1,4 +1,4 @@
-const CACHE_NAME = 'callout-v5';
+const CACHE_NAME = 'callout-v8';
 
 const PRECACHE_URLS = [
   './',
@@ -14,6 +14,7 @@ const PRECACHE_URLS = [
   './js/components/SenderView.js',
   './js/components/ReceiverView.js',
   './js/components/SettingsModal.js',
+  './js/components/HelpModal.js',
   './js/components/AppMenu.js',
   './js/components/InstallBanner.js',
   './vendor/mqtt.min.js',

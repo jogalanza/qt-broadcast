@@ -1,5 +1,8 @@
-const { ref, computed } = Vue;
+const { ref, computed, onMounted, onUnmounted } = Vue;
 import { installState, promptInstall, reopen } from '../install-prompt.js';
+
+const SWIPE_MIN_DISTANCE = 60;
+const SWIPE_MAX_TIME_MS = 700;
 
 export default {
   name: 'AppMenu',
@@ -7,7 +10,7 @@ export default {
     mode: { type: String, required: true },
     status: { type: String, required: true },
   },
-  emits: ['set-mode', 'open-settings'],
+  emits: ['set-mode', 'open-settings', 'open-help'],
   setup(props, { emit }) {
     const open = ref(false);
 
@@ -30,16 +33,58 @@ export default {
       open.value = false;
     }
 
+    function openHelp() {
+      emit('open-help');
+      open.value = false;
+    }
+
     async function install() {
       const outcome = await promptInstall();
       if (outcome === 'unavailable') reopen();
       open.value = false;
     }
 
-    return { open, statusColor, canShowInstall, choose, openSettings, install };
+    let touchStartY = null;
+    let touchStartTime = 0;
+
+    function onTouchStart(e) {
+      if (e.touches.length !== 1) return;
+      touchStartY = e.touches[0].clientY;
+      touchStartTime = Date.now();
+    }
+
+    function onTouchEnd(e) {
+      if (touchStartY === null) return;
+      const startY = touchStartY;
+      const elapsed = Date.now() - touchStartTime;
+      touchStartY = null;
+
+      if (open.value) return;
+      const target = e.target;
+      if (target?.closest?.('[contenteditable], input, textarea, select, [role="dialog"]')) return;
+
+      const touch = e.changedTouches && e.changedTouches[0];
+      if (!touch) return;
+      const deltaY = startY - touch.clientY;
+      if (deltaY > SWIPE_MIN_DISTANCE && elapsed < SWIPE_MAX_TIME_MS) {
+        open.value = true;
+      }
+    }
+
+    onMounted(() => {
+      window.addEventListener('touchstart', onTouchStart, { passive: true });
+      window.addEventListener('touchend', onTouchEnd, { passive: true });
+    });
+
+    onUnmounted(() => {
+      window.removeEventListener('touchstart', onTouchStart);
+      window.removeEventListener('touchend', onTouchEnd);
+    });
+
+    return { open, statusColor, canShowInstall, choose, openSettings, openHelp, install };
   },
   template: /* html */ `
-    <div class="absolute top-2 right-2 z-50">
+    <div class="absolute right-2 z-50" style="top: calc(env(safe-area-inset-top, 0px) + 3.25rem);">
       <button
         @click="open = !open"
         class="flex h-11 w-11 items-center justify-center rounded-full bg-black/30 text-white backdrop-blur hover:bg-black/50 transition"
@@ -76,6 +121,11 @@ export default {
           @click="openSettings"
           class="w-full rounded-lg bg-slate-800 py-2 text-sm font-medium text-slate-200 hover:bg-slate-700 transition"
         >Settings</button>
+
+        <button
+          @click="openHelp"
+          class="w-full rounded-lg bg-slate-800 py-2 text-sm font-medium text-slate-200 hover:bg-slate-700 transition"
+        >Help</button>
 
         <button
           v-if="canShowInstall"

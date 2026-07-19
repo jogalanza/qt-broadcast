@@ -24,6 +24,21 @@
       content: attr(data-placeholder);
       color: #64748b;
     }
+
+    .receiver-window {
+      --rfs: clamp(3.5rem, 14vw, 11rem);
+      height: calc(2 * 1.15 * var(--rfs));
+    }
+    .receiver-text {
+      font-size: var(--rfs);
+      line-height: 1.15;
+      will-change: transform;
+    }
+    @media (orientation: portrait) {
+      /* Grow with height, but stay capped by a width-based ceiling so
+         ordinary words don't outgrow the line and force constant marquee. */
+      .receiver-window { --rfs: clamp(3.5rem, min(20vh, 22vw), 11rem); }
+    }
   </style>
 
   <script src="./vendor/mqtt.min.js"></script>
