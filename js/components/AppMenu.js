@@ -100,7 +100,7 @@ export default {
     return { open, statusColor, orbStyle, orbAnimClass, canShowInstall, choose, openSettings, openHelp, install };
   },
   template: /* html */ `
-    <div class="absolute right-2 z-50" style="top: calc(env(safe-area-inset-top, 0px) + 3.25rem);">
+    <div class="fixed right-2 z-50" style="top: calc(env(safe-area-inset-top, 0px) + 3.25rem);">
       <button
         @click="open = !open"
         class="relative flex h-11 w-11 items-center justify-center rounded-full bg-black/30 text-white backdrop-blur hover:bg-black/50 transition"
