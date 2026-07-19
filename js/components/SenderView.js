@@ -12,6 +12,7 @@ export default {
     const fontColor = ref('#ffffff');
     const charCount = ref(0);
     const sentFlash = ref(false);
+    const clearedFlash = ref(false);
     let lastValidHtml = '';
 
     function updateCount() {
@@ -92,6 +93,12 @@ export default {
       setTimeout(() => (sentFlash.value = false), 900);
     }
 
+    function clearReceivers() {
+      mqttClient.publish({ v: 1, type: 'clear', timestamp: Date.now() });
+      clearedFlash.value = true;
+      setTimeout(() => (clearedFlash.value = false), 900);
+    }
+
     const overLimit = computed(() => charCount.value > MAX_CHARS);
     const counterClass = computed(() => (overLimit.value ? 'text-red-400' : 'text-slate-400'));
 
@@ -101,10 +108,12 @@ export default {
       fontColor,
       charCount,
       sentFlash,
+      clearedFlash,
       format,
       applyFontColor,
       clearEditor,
       broadcast,
+      clearReceivers,
       counterClass,
       MAX_CHARS,
     };
@@ -159,15 +168,23 @@ export default {
 
         <div class="flex items-center justify-between text-sm">
           <span :class="counterClass">{{ charCount }} / {{ MAX_CHARS }}</span>
-          <button @click="clearEditor" class="text-slate-400 hover:text-slate-200">Clear</button>
+          <button @click="clearEditor" class="text-slate-400 hover:text-slate-200">Clear text</button>
         </div>
 
-        <button
-          @click="broadcast"
-          class="w-full rounded-xl bg-indigo-500 py-3 text-base font-semibold text-white hover:bg-indigo-400 transition"
-        >
-          {{ sentFlash ? 'Sent ✓' : 'Broadcast' }}
-        </button>
+        <div class="flex gap-2">
+          <button
+            @click="clearReceivers"
+            class="rounded-xl bg-slate-800 px-4 py-3 text-sm font-medium text-slate-200 hover:bg-slate-700 transition"
+          >
+            {{ clearedFlash ? 'Cleared ✓' : 'Clear Display' }}
+          </button>
+          <button
+            @click="broadcast"
+            class="flex-1 rounded-xl bg-indigo-500 py-3 text-base font-semibold text-white hover:bg-indigo-400 transition"
+          >
+            {{ sentFlash ? 'Sent ✓' : 'Broadcast' }}
+          </button>
+        </div>
       </div>
     </div>
   `,

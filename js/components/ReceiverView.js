@@ -44,8 +44,22 @@ export default {
       }, Math.max(0, durationMs));
     }
 
+    function handleClear() {
+      ++generation; // invalidate any in-flight flash/pagination continuation
+      stopFlash();
+      paginator.stop();
+      bgColor.value = IDLE_COLOR;
+      waiting.value = true;
+    }
+
     function handleMessage(payload) {
-      if (!payload || payload.type !== 'broadcast') return;
+      if (!payload) return;
+      if (payload.type === 'clear') {
+        handleClear();
+        return;
+      }
+      if (payload.type !== 'broadcast') return;
+
       const myGen = ++generation;
       waiting.value = false;
       paginator.stop();
