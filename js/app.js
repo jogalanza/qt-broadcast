@@ -3,6 +3,7 @@ import { mqttClient } from './mqtt-client.js';
 import SenderView from './components/SenderView.js';
 import ReceiverView from './components/ReceiverView.js';
 import SettingsModal from './components/SettingsModal.js';
+import HelpModal from './components/HelpModal.js';
 import AppMenu from './components/AppMenu.js';
 import InstallBanner from './components/InstallBanner.js';
 
@@ -10,11 +11,12 @@ const { ref, onMounted } = Vue;
 
 const RootComponent = {
   name: 'App',
-  components: { SenderView, ReceiverView, SettingsModal, AppMenu, InstallBanner },
+  components: { SenderView, ReceiverView, SettingsModal, HelpModal, AppMenu, InstallBanner },
   setup() {
     const mode = ref(settings.lastMode || 'sender');
     const status = ref(mqttClient.getStatus());
     const settingsOpen = ref(false);
+    const helpOpen = ref(false);
 
     function setMode(next) {
       mode.value = next;
@@ -47,14 +49,21 @@ const RootComponent = {
       }
     });
 
-    return { mode, status, settingsOpen, setMode, onSettingsClose };
+    return { mode, status, settingsOpen, helpOpen, setMode, onSettingsClose };
   },
   template: /* html */ `
     <div>
-      <app-menu :mode="mode" :status="status" @set-mode="setMode" @open-settings="settingsOpen = true" />
+      <app-menu
+        :mode="mode"
+        :status="status"
+        @set-mode="setMode"
+        @open-settings="settingsOpen = true"
+        @open-help="helpOpen = true"
+      />
       <sender-view v-if="mode === 'sender'" />
       <receiver-view v-else />
       <settings-modal :open="settingsOpen" @close="onSettingsClose" />
+      <help-modal :open="helpOpen" @close="helpOpen = false" />
       <install-banner />
     </div>
   `,

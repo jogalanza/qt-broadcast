@@ -29,7 +29,7 @@ export default {
     return { form, save, resetDefaults };
   },
   template: /* html */ `
-    <div v-if="open" class="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4">
+    <div v-if="open" role="dialog" class="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4">
       <div class="w-full max-w-md rounded-2xl bg-slate-900 text-slate-100 shadow-2xl ring-1 ring-white/10 p-5 space-y-4">
         <h2 class="text-lg font-semibold">Settings</h2>
 
