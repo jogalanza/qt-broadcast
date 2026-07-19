@@ -39,7 +39,7 @@ export default {
     return { open, statusColor, canShowInstall, choose, openSettings, install };
   },
   template: /* html */ `
-    <div class="absolute top-2 right-2 z-50">
+    <div class="absolute right-2 z-50" style="top: calc(env(safe-area-inset-top, 0px) + 3.25rem);">
       <button
         @click="open = !open"
         class="flex h-11 w-11 items-center justify-center rounded-full bg-black/30 text-white backdrop-blur hover:bg-black/50 transition"
