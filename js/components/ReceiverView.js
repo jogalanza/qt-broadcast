@@ -62,7 +62,7 @@ export default {
 
       const myGen = ++generation;
       waiting.value = false;
-      paginator.stop();
+      paginator.setHtml(''); // clear the previous message before flashing
 
       const html = sanitizeHtml(payload.html || '');
       const color = /^#[0-9a-fA-F]{6}$/.test(payload.bgColor || '') ? payload.bgColor : IDLE_COLOR;
