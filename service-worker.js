@@ -1,4 +1,4 @@
-const CACHE_NAME = 'callout-v11';
+const CACHE_NAME = 'callout-v15';
 
 const PRECACHE_URLS = [
   './',
@@ -17,6 +17,7 @@ const PRECACHE_URLS = [
   './js/components/HelpModal.js',
   './js/components/AppMenu.js',
   './js/components/InstallBanner.js',
+  './js/components/ConnectionOrb.js',
   './vendor/mqtt.min.js',
   './vendor/vue.global.prod.js',
   './vendor/tailwindcss-browser.global.js',

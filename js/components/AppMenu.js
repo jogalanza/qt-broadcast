@@ -84,7 +84,7 @@ export default {
     return { open, statusColor, canShowInstall, choose, openSettings, openHelp, install };
   },
   template: /* html */ `
-    <div class="absolute right-2 z-50" style="top: calc(env(safe-area-inset-top, 0px) + 3.25rem);">
+    <div class="fixed right-2 z-50" style="top: calc(env(safe-area-inset-top, 0px) + 3.25rem);">
       <button
         @click="open = !open"
         class="flex h-11 w-11 items-center justify-center rounded-full bg-black/30 text-white backdrop-blur hover:bg-black/50 transition"
@@ -94,12 +94,22 @@ export default {
           <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" />
         </svg>
       </button>
+    </div>
 
-      <div
-        v-if="open"
-        class="mt-2 w-56 rounded-xl bg-slate-900/95 text-slate-100 shadow-xl ring-1 ring-white/10 backdrop-blur p-3 space-y-2"
-      >
-        <div class="flex items-center gap-2 px-1 text-xs uppercase tracking-wide text-slate-400">
+    <div v-if="open" role="dialog" class="fixed inset-0 z-50">
+      <div class="absolute inset-0 bg-black/60" @click="open = false"></div>
+
+      <div class="absolute inset-y-0 right-0 w-full max-w-sm rounded-l-2xl bg-slate-900 text-slate-100 shadow-2xl ring-1 ring-white/10 p-5 space-y-4 overflow-y-auto">
+        <div class="flex items-center justify-between">
+          <h2 class="text-lg font-semibold">Menu</h2>
+          <button @click="open = false" class="h-8 w-8 rounded-lg text-slate-400 hover:bg-slate-800 hover:text-slate-200" aria-label="Close">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+
+        <div class="flex items-center gap-2 text-xs uppercase tracking-wide text-slate-400">
           <span class="inline-block h-2 w-2 rounded-full" :class="statusColor[status] || 'bg-slate-500'"></span>
           {{ status }}
         </div>
