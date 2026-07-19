@@ -3,6 +3,7 @@ import { installState, promptInstall, reopen } from '../install-prompt.js';
 
 const SWIPE_MIN_DISTANCE = 60;
 const SWIPE_MAX_TIME_MS = 700;
+const EDGE_ZONE_PX = 24;
 
 export default {
   name: 'AppMenu',
@@ -44,29 +45,45 @@ export default {
       open.value = false;
     }
 
+    let touchStartX = null;
     let touchStartY = null;
     let touchStartTime = 0;
+    let touchStartedAtRightEdge = false;
 
     function onTouchStart(e) {
       if (e.touches.length !== 1) return;
+      touchStartX = e.touches[0].clientX;
       touchStartY = e.touches[0].clientY;
       touchStartTime = Date.now();
+      touchStartedAtRightEdge = window.innerWidth - touchStartX <= EDGE_ZONE_PX;
     }
 
     function onTouchEnd(e) {
       if (touchStartY === null) return;
+      const startX = touchStartX;
       const startY = touchStartY;
+      const startedAtRightEdge = touchStartedAtRightEdge;
       const elapsed = Date.now() - touchStartTime;
+      touchStartX = null;
       touchStartY = null;
 
       if (open.value) return;
       const target = e.target;
       if (target?.closest?.('[contenteditable], input, textarea, select, [role="dialog"]')) return;
+      if (elapsed >= SWIPE_MAX_TIME_MS) return;
 
       const touch = e.changedTouches && e.changedTouches[0];
       if (!touch) return;
+      const deltaX = startX - touch.clientX;
       const deltaY = startY - touch.clientY;
-      if (deltaY > SWIPE_MIN_DISTANCE && elapsed < SWIPE_MAX_TIME_MS) {
+
+      // Swipe up anywhere on screen.
+      if (deltaY > SWIPE_MIN_DISTANCE && deltaY > Math.abs(deltaX)) {
+        open.value = true;
+        return;
+      }
+      // Swipe left starting from the right edge.
+      if (startedAtRightEdge && deltaX > SWIPE_MIN_DISTANCE && deltaX > Math.abs(deltaY)) {
         open.value = true;
       }
     }
