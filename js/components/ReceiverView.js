@@ -1,4 +1,4 @@
-const { ref, onMounted, onUnmounted } = Vue;
+const { ref, computed, onMounted, onUnmounted } = Vue;
 import { mqttClient } from '../mqtt-client.js';
 import { sanitizeHtml } from '../sanitizer.js';
 import { settings } from '../settings.js';
@@ -9,6 +9,18 @@ const FLASH_STEP_MS = 250;
 const IDLE_COLOR = '#0f172a';
 const BASE_SCROLL_SPEED = 60;
 const BASE_MARQUEE_SPEED = 110;
+const CLOCK_TICK_MS = 15000;
+
+function formatTimeAgo(ms) {
+  const seconds = Math.floor(ms / 1000);
+  if (seconds < 60) return 'just now';
+  const minutes = Math.floor(seconds / 60);
+  if (minutes < 60) return minutes === 1 ? '1 minute ago' : minutes + ' minutes ago';
+  const hours = Math.floor(minutes / 60);
+  if (hours < 24) return hours === 1 ? '1 hour ago' : hours + ' hours ago';
+  const days = Math.floor(hours / 24);
+  return days === 1 ? '1 day ago' : days + ' days ago';
+}
 
 export default {
   name: 'ReceiverView',
@@ -17,10 +29,15 @@ export default {
     const innerEl = ref(null);
     const bgColor = ref(IDLE_COLOR);
     const waiting = ref(true);
+    const receivedAt = ref(null);
+    const now = ref(Date.now());
+
+    const timeAgoText = computed(() => (receivedAt.value ? formatTimeAgo(now.value - receivedAt.value) : ''));
 
     let paginator = null;
     let flashInterval = null;
     let flashTimeout = null;
+    let clockInterval = null;
     let generation = 0;
 
     function stopFlash() {
@@ -50,6 +67,7 @@ export default {
       paginator.stop();
       bgColor.value = IDLE_COLOR;
       waiting.value = true;
+      receivedAt.value = null;
     }
 
     function handleMessage(payload) {
@@ -62,7 +80,9 @@ export default {
 
       const myGen = ++generation;
       waiting.value = false;
-      paginator.stop();
+      receivedAt.value = Date.now();
+      now.value = receivedAt.value;
+      paginator.setHtml(''); // clear the previous message before flashing
 
       const html = sanitizeHtml(payload.html || '');
       const color = /^#[0-9a-fA-F]{6}$/.test(payload.bgColor || '') ? payload.bgColor : IDLE_COLOR;
@@ -80,15 +100,17 @@ export default {
       paginator = new Paginator(containerEl.value, innerEl.value);
       mqttClient.addEventListener('message', (e) => handleMessage(e.detail));
       wakelock.acquire();
+      clockInterval = setInterval(() => (now.value = Date.now()), CLOCK_TICK_MS);
     });
 
     onUnmounted(() => {
       stopFlash();
       paginator?.destroy();
       wakelock.release();
+      if (clockInterval) clearInterval(clockInterval);
     });
 
-    return { containerEl, innerEl, bgColor, waiting };
+    return { containerEl, innerEl, bgColor, waiting, timeAgoText };
   },
   template: /* html */ `
     <div
@@ -107,6 +129,12 @@ export default {
           class="receiver-text text-white font-bold whitespace-normal"
         ></div>
       </div>
+
+      <p
+        v-if="timeAgoText"
+        class="fixed right-3 text-sm text-white/50 bg-black/30 backdrop-blur rounded-full px-3 py-1"
+        style="bottom: calc(env(safe-area-inset-bottom, 0px) + 0.75rem);"
+      >{{ timeAgoText }}</p>
     </div>
   `,
 };
