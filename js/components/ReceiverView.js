@@ -4,12 +4,14 @@ import { sanitizeHtml } from '../sanitizer.js';
 import { settings } from '../settings.js';
 import { Paginator } from '../pagination.js';
 import * as wakelock from '../wakelock.js';
+import { countdownState, startCountdown, stopCountdown } from '../countdown.js';
 
 const FLASH_STEP_MS = 250;
 const IDLE_COLOR = '#0f172a';
 const BASE_SCROLL_SPEED = 60;
 const BASE_MARQUEE_SPEED = 110;
 const CLOCK_TICK_MS = 15000;
+const COUNTDOWN_RE = /^\[countdown:(\d{1,2}):(\d{1,2}):(\d{1,2})\]$/;
 
 function formatTimeAgo(ms) {
   const seconds = Math.floor(ms / 1000);
@@ -64,6 +66,7 @@ export default {
     function handleClear() {
       ++generation; // invalidate any in-flight flash/pagination continuation
       stopFlash();
+      stopCountdown();
       paginator.stop();
       bgColor.value = IDLE_COLOR;
       waiting.value = true;
@@ -82,13 +85,25 @@ export default {
       waiting.value = false;
       receivedAt.value = Date.now();
       now.value = receivedAt.value;
+      stopCountdown(); // a new message always interrupts any in-progress countdown
       paginator.setHtml(''); // clear the previous message before flashing
 
       const html = sanitizeHtml(payload.html || '');
       const color = /^#[0-9a-fA-F]{6}$/.test(payload.bgColor || '') ? payload.bgColor : IDLE_COLOR;
 
+      const countdownMatch = (payload.text || '').trim().match(COUNTDOWN_RE);
+
       runFlash(color, settings.flashDurationMs, () => {
         if (myGen !== generation) return;
+        if (countdownMatch) {
+          const totalSeconds =
+            Number(countdownMatch[1]) * 3600 + Number(countdownMatch[2]) * 60 + Number(countdownMatch[3]);
+          startCountdown(totalSeconds, color, () => {
+            if (myGen !== generation) return;
+            runFlash(color, settings.flashDurationMs, () => {});
+          });
+          return;
+        }
         paginator.setHtml(html);
         paginator.scrollSpeedPxPerSec = BASE_SCROLL_SPEED * settings.scrollSpeed;
         paginator.marqueeSpeedPxPerSec = BASE_MARQUEE_SPEED * settings.scrollSpeed;
@@ -101,6 +116,15 @@ export default {
       mqttClient.addEventListener('message', (e) => handleMessage(e.detail));
       wakelock.acquire();
       clockInterval = setInterval(() => (now.value = Date.now()), CLOCK_TICK_MS);
+
+      // Restore visual state for a countdown that kept running (module-level
+      // singleton) while this component was unmounted, e.g. the user was in
+      // Sender mode. The countdown text itself never stopped updating; this
+      // just re-syncs the background color the countdown settled to.
+      if (countdownState.active) {
+        waiting.value = false;
+        bgColor.value = countdownState.bgColor;
+      }
     });
 
     onUnmounted(() => {
@@ -110,7 +134,7 @@ export default {
       if (clockInterval) clearInterval(clockInterval);
     });
 
-    return { containerEl, innerEl, bgColor, waiting, timeAgoText };
+    return { containerEl, innerEl, bgColor, waiting, timeAgoText, countdownState };
   },
   template: /* html */ `
     <div
@@ -120,7 +144,14 @@ export default {
       <p v-if="waiting" class="text-white/40 text-xl tracking-wide">Waiting for broadcast…</p>
 
       <div
-        v-show="!waiting"
+        v-show="!waiting && countdownState.active"
+        class="receiver-window w-[96vw] flex items-center justify-center"
+      >
+        <span class="receiver-text text-white font-bold">{{ countdownState.text }}</span>
+      </div>
+
+      <div
+        v-show="!waiting && !countdownState.active"
         ref="containerEl"
         class="receiver-window w-[96vw] overflow-hidden"
       >
