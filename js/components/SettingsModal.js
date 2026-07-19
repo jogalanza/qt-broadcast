@@ -32,7 +32,10 @@ export default {
     <div v-if="open" role="dialog" class="fixed inset-0 z-50">
       <div class="absolute inset-0 bg-black/60" @click="$emit('close')"></div>
 
-      <div class="absolute inset-y-0 right-0 w-full max-w-sm rounded-l-2xl bg-slate-900 text-slate-100 shadow-2xl ring-1 ring-white/10 p-5 space-y-4 overflow-y-auto">
+      <div
+        class="absolute inset-y-0 right-0 w-full max-w-sm rounded-l-2xl bg-slate-900 text-slate-100 shadow-2xl ring-1 ring-white/10 p-5 space-y-4 overflow-y-auto"
+        style="padding-top: calc(env(safe-area-inset-top, 0px) + 1.25rem);"
+      >
         <div class="flex items-center justify-between">
           <h2 class="text-lg font-semibold">Settings</h2>
           <button @click="$emit('close')" class="h-8 w-8 rounded-lg text-slate-400 hover:bg-slate-800 hover:text-slate-200" aria-label="Close">
