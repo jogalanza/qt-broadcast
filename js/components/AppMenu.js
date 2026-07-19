@@ -1,4 +1,5 @@
-const { ref } = Vue;
+const { ref, computed } = Vue;
+import { installState, promptInstall, reopen } from '../install-prompt.js';
 
 export default {
   name: 'AppMenu',
@@ -17,6 +18,8 @@ export default {
       error: 'bg-red-500',
     };
 
+    const canShowInstall = computed(() => !installState.installed);
+
     function choose(mode) {
       emit('set-mode', mode);
       open.value = false;
@@ -27,7 +30,13 @@ export default {
       open.value = false;
     }
 
-    return { open, statusColor, choose, openSettings };
+    async function install() {
+      const outcome = await promptInstall();
+      if (outcome === 'unavailable') reopen();
+      open.value = false;
+    }
+
+    return { open, statusColor, canShowInstall, choose, openSettings, install };
   },
   template: /* html */ `
     <div class="absolute top-2 right-2 z-50">
@@ -67,6 +76,17 @@ export default {
           @click="openSettings"
           class="w-full rounded-lg bg-slate-800 py-2 text-sm font-medium text-slate-200 hover:bg-slate-700 transition"
         >Settings</button>
+
+        <button
+          v-if="canShowInstall"
+          @click="install"
+          class="w-full flex items-center justify-center gap-2 rounded-lg bg-slate-800 py-2 text-sm font-medium text-slate-200 hover:bg-slate-700 transition"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v12m0 0l-4-4m4 4l4-4M4 20h16" />
+          </svg>
+          Install app
+        </button>
       </div>
     </div>
   `,

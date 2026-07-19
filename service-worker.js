@@ -1,4 +1,4 @@
-const CACHE_NAME = 'callout-v3';
+const CACHE_NAME = 'callout-v5';
 
 const PRECACHE_URLS = [
   './',
@@ -10,10 +10,12 @@ const PRECACHE_URLS = [
   './js/sanitizer.js',
   './js/pagination.js',
   './js/wakelock.js',
+  './js/install-prompt.js',
   './js/components/SenderView.js',
   './js/components/ReceiverView.js',
   './js/components/SettingsModal.js',
   './js/components/AppMenu.js',
+  './js/components/InstallBanner.js',
   './vendor/mqtt.min.js',
   './vendor/vue.global.prod.js',
   './vendor/tailwindcss-browser.global.js',

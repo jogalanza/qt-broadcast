@@ -1,5 +1,8 @@
 const ALLOWED_TAGS = new Set(['B', 'STRONG', 'I', 'EM', 'U', 'BR', 'SPAN', 'DIV']);
-const COLOR_STYLE_RE = /^color:\s*(#[0-9a-fA-F]{3,6}|rgb\(\s*\d{1,3}\s*,\s*\d{1,3}\s*,\s*\d{1,3}\s*\))\s*;?$/;
+const ALLOWED_STYLE_RES = [
+  /^color:\s*(#[0-9a-fA-F]{3,6}|rgb\(\s*\d{1,3}\s*,\s*\d{1,3}\s*,\s*\d{1,3}\s*\))\s*;?$/,
+  /^text-align:\s*(left|center|right|justify)\s*;?$/,
+];
 
 function cleanNode(node, out) {
   if (node.nodeType === Node.TEXT_NODE) {
@@ -18,8 +21,11 @@ function cleanNode(node, out) {
   const clean = document.createElement(tag);
   if (tag === 'SPAN' || tag === 'DIV') {
     const style = node.getAttribute('style') || '';
-    const decl = style.split(';').map((s) => s.trim()).find((s) => COLOR_STYLE_RE.test(s + ';'));
-    if (decl) clean.setAttribute('style', decl.endsWith(';') ? decl : decl + ';');
+    const decls = style
+      .split(';')
+      .map((s) => s.trim())
+      .filter((s) => s && ALLOWED_STYLE_RES.some((re) => re.test(s + ';')));
+    if (decls.length) clean.setAttribute('style', decls.map((d) => (d.endsWith(';') ? d : d + ';')).join(' '));
   }
   for (const child of Array.from(node.childNodes)) cleanNode(child, clean);
   out.appendChild(clean);
