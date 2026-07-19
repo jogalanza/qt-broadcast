@@ -26,6 +26,11 @@ export default {
           </div>
 
           <div>
+            <p class="font-medium text-slate-100">Keeping the Receiver screen on</p>
+            <p class="mt-1 text-slate-400">Callout does its best to keep the screen awake automatically, but iOS can still override this (Low Power Mode, installed-app quirks, etc.). For a dedicated Receiver device, the fully reliable fix is turning off the device's own screen timeout: iOS Settings &rarr; Display &amp; Brightness &rarr; Auto-Lock &rarr; Never.</p>
+          </div>
+
+          <div>
             <p class="font-medium text-slate-100">Menu access</p>
             <p class="mt-1 text-slate-400">Tap the menu button (top-right), or swipe up anywhere on the screen, to switch modes, check connection status, open Settings, or install the app.</p>
           </div>
