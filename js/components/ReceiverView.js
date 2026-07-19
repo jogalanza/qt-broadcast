@@ -7,6 +7,8 @@ import * as wakelock from '../wakelock.js';
 
 const FLASH_STEP_MS = 250;
 const IDLE_COLOR = '#0f172a';
+const BASE_SCROLL_SPEED = 60;
+const BASE_MARQUEE_SPEED = 110;
 
 export default {
   name: 'ReceiverView',
@@ -42,8 +44,22 @@ export default {
       }, Math.max(0, durationMs));
     }
 
+    function handleClear() {
+      ++generation; // invalidate any in-flight flash/pagination continuation
+      stopFlash();
+      paginator.stop();
+      bgColor.value = IDLE_COLOR;
+      waiting.value = true;
+    }
+
     function handleMessage(payload) {
-      if (!payload || payload.type !== 'broadcast') return;
+      if (!payload) return;
+      if (payload.type === 'clear') {
+        handleClear();
+        return;
+      }
+      if (payload.type !== 'broadcast') return;
+
       const myGen = ++generation;
       waiting.value = false;
       paginator.stop();
@@ -54,6 +70,8 @@ export default {
       runFlash(color, settings.flashDurationMs, () => {
         if (myGen !== generation) return;
         paginator.setHtml(html);
+        paginator.scrollSpeedPxPerSec = BASE_SCROLL_SPEED * settings.scrollSpeed;
+        paginator.marqueeSpeedPxPerSec = BASE_MARQUEE_SPEED * settings.scrollSpeed;
         paginator.start({ loop: settings.loopEnabled });
       });
     }

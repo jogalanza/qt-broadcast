@@ -19,7 +19,11 @@ function cleanNode(node, out) {
   }
 
   const clean = document.createElement(tag);
-  if (tag === 'SPAN' || tag === 'DIV') {
+  if (tag !== 'BR') {
+    // The value regexes fully validate what's allowed through regardless of
+    // tag, so any formatting tag may legitimately carry a color/text-align
+    // style — e.g. the browser folds a color pick onto an existing <b> tag
+    // rather than nesting a new <span> when bold is already applied.
     const style = node.getAttribute('style') || '';
     const decls = style
       .split(';')

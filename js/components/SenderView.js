@@ -9,8 +9,10 @@ export default {
   setup() {
     const editorEl = ref(null);
     const bgColor = ref('#1e293b');
+    const fontColor = ref('#ffffff');
     const charCount = ref(0);
     const sentFlash = ref(false);
+    const clearedFlash = ref(false);
     let lastValidHtml = '';
 
     function updateCount() {
@@ -56,6 +58,19 @@ export default {
       updateCount();
     }
 
+    function applyFontColor() {
+      editorEl.value.focus();
+      // Without styleWithCSS, foreColor produces legacy <font color="..."> tags,
+      // which aren't in the sanitizer's allowlist and would get stripped on
+      // broadcast. Scope styleWithCSS to just this command so bold/italic/
+      // underline keep using their normal tag-based output.
+      document.execCommand('styleWithCSS', false, true);
+      document.execCommand('foreColor', false, fontColor.value);
+      document.execCommand('styleWithCSS', false, false);
+      snapshot();
+      updateCount();
+    }
+
     function clearEditor() {
       editorEl.value.innerHTML = '';
       snapshot();
@@ -78,10 +93,30 @@ export default {
       setTimeout(() => (sentFlash.value = false), 900);
     }
 
+    function clearReceivers() {
+      mqttClient.publish({ v: 1, type: 'clear', timestamp: Date.now() });
+      clearedFlash.value = true;
+      setTimeout(() => (clearedFlash.value = false), 900);
+    }
+
     const overLimit = computed(() => charCount.value > MAX_CHARS);
     const counterClass = computed(() => (overLimit.value ? 'text-red-400' : 'text-slate-400'));
 
-    return { editorEl, bgColor, charCount, sentFlash, format, clearEditor, broadcast, counterClass, MAX_CHARS };
+    return {
+      editorEl,
+      bgColor,
+      fontColor,
+      charCount,
+      sentFlash,
+      clearedFlash,
+      format,
+      applyFontColor,
+      clearEditor,
+      broadcast,
+      clearReceivers,
+      counterClass,
+      MAX_CHARS,
+    };
   },
   template: /* html */ `
     <div class="min-h-screen flex flex-col items-center justify-center bg-slate-950 text-slate-100 px-4">
@@ -112,6 +147,13 @@ export default {
           </button>
 
           <div class="ml-auto flex items-center gap-2 text-sm">
+            <span class="text-slate-400">Text</span>
+            <input
+              v-model="fontColor"
+              @change="applyFontColor"
+              type="color"
+              class="h-8 w-10 cursor-pointer rounded bg-transparent"
+            />
             <span class="text-slate-400">Background</span>
             <input v-model="bgColor" type="color" class="h-8 w-10 cursor-pointer rounded bg-transparent" />
           </div>
@@ -126,15 +168,23 @@ export default {
 
         <div class="flex items-center justify-between text-sm">
           <span :class="counterClass">{{ charCount }} / {{ MAX_CHARS }}</span>
-          <button @click="clearEditor" class="text-slate-400 hover:text-slate-200">Clear</button>
+          <button @click="clearEditor" class="text-slate-400 hover:text-slate-200">Clear text</button>
         </div>
 
-        <button
-          @click="broadcast"
-          class="w-full rounded-xl bg-indigo-500 py-3 text-base font-semibold text-white hover:bg-indigo-400 transition"
-        >
-          {{ sentFlash ? 'Sent ✓' : 'Broadcast' }}
-        </button>
+        <div class="flex gap-2">
+          <button
+            @click="clearReceivers"
+            class="rounded-xl bg-slate-800 px-4 py-3 text-sm font-medium text-slate-200 hover:bg-slate-700 transition"
+          >
+            {{ clearedFlash ? 'Cleared ✓' : 'Clear Display' }}
+          </button>
+          <button
+            @click="broadcast"
+            class="flex-1 rounded-xl bg-indigo-500 py-3 text-base font-semibold text-white hover:bg-indigo-400 transition"
+          >
+            {{ sentFlash ? 'Sent ✓' : 'Broadcast' }}
+          </button>
+        </div>
       </div>
     </div>
   `,
