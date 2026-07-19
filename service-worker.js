@@ -1,4 +1,4 @@
-const CACHE_NAME = 'callout-v11';
+const CACHE_NAME = 'callout-v12';
 
 const PRECACHE_URLS = [
   './',

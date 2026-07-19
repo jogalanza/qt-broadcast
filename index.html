@@ -39,6 +39,12 @@
          ordinary words don't outgrow the line and force constant marquee. */
       .receiver-window { --rfs: clamp(3.5rem, min(20vh, 22vw), 11rem); }
     }
+
+    @keyframes status-orb-glow {
+      0%, 100% { box-shadow: 0 0 4px 1px var(--orb-glow), 0 0 0 0 var(--orb-glow); }
+      50% { box-shadow: 0 0 10px 3px var(--orb-glow), 0 0 0 4px transparent; }
+    }
+    .status-orb-glow { animation: status-orb-glow 1.8s ease-in-out infinite; }
   </style>
 
   <script src="./vendor/mqtt.min.js"></script>
