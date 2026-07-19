@@ -7,6 +7,7 @@ export const DEFAULTS = Object.freeze({
   password: '',
   flashDurationMs: 3000,
   loopEnabled: true,
+  scrollSpeed: 1,
   lastMode: 'sender',
 });
 

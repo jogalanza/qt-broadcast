@@ -11,8 +11,8 @@ export class Paginator {
   constructor(containerEl, innerEl, opts = {}) {
     this.containerEl = containerEl;
     this.innerEl = innerEl;
-    this.scrollSpeedPxPerSec = opts.scrollSpeedPxPerSec ?? 40;
-    this.marqueeSpeedPxPerSec = opts.marqueeSpeedPxPerSec ?? 90;
+    this.scrollSpeedPxPerSec = opts.scrollSpeedPxPerSec ?? 60;
+    this.marqueeSpeedPxPerSec = opts.marqueeSpeedPxPerSec ?? 110;
     this.startPauseMs = opts.startPauseMs ?? 800;
     this.loopPauseMs = opts.loopPauseMs ?? 900;
 

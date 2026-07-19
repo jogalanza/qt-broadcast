@@ -30,7 +30,7 @@ export default {
   },
   template: /* html */ `
     <div v-if="open" role="dialog" class="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4">
-      <div class="w-full max-w-md rounded-2xl bg-slate-900 text-slate-100 shadow-2xl ring-1 ring-white/10 p-5 space-y-4">
+      <div class="w-full max-w-md rounded-2xl bg-slate-900 text-slate-100 shadow-2xl ring-1 ring-white/10 p-5 space-y-4 max-h-[85vh] overflow-y-auto">
         <h2 class="text-lg font-semibold">Settings</h2>
 
         <div class="space-y-3">
@@ -63,6 +63,12 @@ export default {
             <span class="text-slate-400">Flash duration (ms)</span>
             <input v-model.number="form.flashDurationMs" type="number" min="0" step="250"
               class="mt-1 w-full rounded-lg bg-slate-800 px-3 py-2 text-sm ring-1 ring-white/10 focus:ring-indigo-400 outline-none" />
+          </label>
+
+          <label class="block text-sm">
+            <span class="text-slate-400">Scroll speed ({{ form.scrollSpeed }}&times;)</span>
+            <input v-model.number="form.scrollSpeed" type="range" min="0.5" max="3" step="0.25"
+              class="mt-1 w-full accent-indigo-500" />
           </label>
 
           <label class="flex items-center gap-2 text-sm text-slate-300">

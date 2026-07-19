@@ -7,6 +7,8 @@ import * as wakelock from '../wakelock.js';
 
 const FLASH_STEP_MS = 250;
 const IDLE_COLOR = '#0f172a';
+const BASE_SCROLL_SPEED = 60;
+const BASE_MARQUEE_SPEED = 110;
 
 export default {
   name: 'ReceiverView',
@@ -54,6 +56,8 @@ export default {
       runFlash(color, settings.flashDurationMs, () => {
         if (myGen !== generation) return;
         paginator.setHtml(html);
+        paginator.scrollSpeedPxPerSec = BASE_SCROLL_SPEED * settings.scrollSpeed;
+        paginator.marqueeSpeedPxPerSec = BASE_MARQUEE_SPEED * settings.scrollSpeed;
         paginator.start({ loop: settings.loopEnabled });
       });
     }
