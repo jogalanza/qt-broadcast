@@ -84,7 +84,7 @@ export default {
     return { editorEl, bgColor, charCount, sentFlash, format, clearEditor, broadcast, counterClass, MAX_CHARS };
   },
   template: /* html */ `
-    <div class="min-h-screen flex flex-col items-center justify-center bg-slate-950 text-slate-100 px-4 py-16">
+    <div class="min-h-screen flex flex-col items-center justify-center bg-slate-950 text-slate-100 px-4">
       <div class="w-full max-w-xl space-y-4">
         <h1 class="text-2xl font-semibold tracking-tight">Callout — Sender</h1>
 

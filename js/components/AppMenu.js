@@ -30,7 +30,7 @@ export default {
     return { open, statusColor, choose, openSettings };
   },
   template: /* html */ `
-    <div class="fixed top-2 right-2 z-50">
+    <div class="absolute top-2 right-2 z-50">
       <button
         @click="open = !open"
         class="flex h-11 w-11 items-center justify-center rounded-full bg-black/30 text-white backdrop-blur hover:bg-black/50 transition"
