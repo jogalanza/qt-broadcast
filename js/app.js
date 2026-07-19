@@ -6,12 +6,13 @@ import SettingsModal from './components/SettingsModal.js';
 import HelpModal from './components/HelpModal.js';
 import AppMenu from './components/AppMenu.js';
 import InstallBanner from './components/InstallBanner.js';
+import ConnectionOrb from './components/ConnectionOrb.js';
 
 const { ref, onMounted } = Vue;
 
 const RootComponent = {
   name: 'App',
-  components: { SenderView, ReceiverView, SettingsModal, HelpModal, AppMenu, InstallBanner },
+  components: { SenderView, ReceiverView, SettingsModal, HelpModal, AppMenu, InstallBanner, ConnectionOrb },
   setup() {
     const mode = ref(settings.lastMode || 'sender');
     const status = ref(mqttClient.getStatus());
@@ -53,6 +54,7 @@ const RootComponent = {
   },
   template: /* html */ `
     <div>
+      <connection-orb :status="status" />
       <app-menu
         :mode="mode"
         :status="status"

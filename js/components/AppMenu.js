@@ -21,22 +21,6 @@ export default {
       error: 'bg-red-500',
     };
 
-    const orbGlow = {
-      connected: 'rgba(52, 211, 153, 0.85)',
-      error: 'rgba(239, 68, 68, 0.85)',
-    };
-
-    const orbStyle = computed(() => {
-      const glow = orbGlow[props.status];
-      return glow ? { '--orb-glow': glow } : {};
-    });
-
-    const orbAnimClass = computed(() => {
-      if (orbGlow[props.status]) return 'status-orb-glow';
-      if (props.status === 'connecting') return 'animate-pulse';
-      return '';
-    });
-
     const canShowInstall = computed(() => !installState.installed);
 
     function choose(mode) {
@@ -97,24 +81,18 @@ export default {
       window.removeEventListener('touchend', onTouchEnd);
     });
 
-    return { open, statusColor, orbStyle, orbAnimClass, canShowInstall, choose, openSettings, openHelp, install };
+    return { open, statusColor, canShowInstall, choose, openSettings, openHelp, install };
   },
   template: /* html */ `
     <div class="fixed right-2 z-50" style="top: calc(env(safe-area-inset-top, 0px) + 3.25rem);">
       <button
         @click="open = !open"
-        class="relative flex h-11 w-11 items-center justify-center rounded-full bg-black/30 text-white backdrop-blur hover:bg-black/50 transition"
+        class="flex h-11 w-11 items-center justify-center rounded-full bg-black/30 text-white backdrop-blur hover:bg-black/50 transition"
         aria-label="Menu"
       >
         <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
           <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" />
         </svg>
-        <span
-          class="absolute -top-0.5 -right-0.5 h-3 w-3 rounded-full ring-2 ring-slate-950"
-          :class="[statusColor[status] || 'bg-slate-500', orbAnimClass]"
-          :style="orbStyle"
-          :aria-label="'Connection: ' + status"
-        ></span>
       </button>
 
       <div
