@@ -86,6 +86,19 @@ export default {
       updateCount();
     }
 
+    async function pasteMessage() {
+      try {
+        const text = await navigator.clipboard.readText();
+        if (!text) return;
+        editorEl.value.focus();
+        document.execCommand('insertText', false, text);
+        snapshot();
+        updateCount();
+      } catch {
+        // Clipboard API may be blocked; fall back to native paste via keyboard
+      }
+    }
+
     function broadcast() {
       const html = sanitizeHtml(editorEl.value.innerHTML);
       const text = htmlToPlainText(html);
@@ -150,6 +163,7 @@ export default {
       format,
       applyFontColor,
       clearEditor,
+      pasteMessage,
       broadcast,
       clearReceivers,
       onCountdownSend,
@@ -225,7 +239,10 @@ export default {
 
           <div class="flex items-center justify-between text-sm">
             <span :class="counterClass">{{ charCount }} / {{ MAX_CHARS }}</span>
-            <button @click="clearEditor" class="text-slate-400 hover:text-slate-200">Clear text</button>
+            <div class="flex items-center gap-3">
+              <button @click="pasteMessage" class="text-slate-400 hover:text-slate-200">Paste</button>
+              <button @click="clearEditor" class="text-slate-400 hover:text-slate-200">Clear text</button>
+            </div>
           </div>
 
           <div class="flex gap-2">
