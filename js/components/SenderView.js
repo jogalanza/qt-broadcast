@@ -180,7 +180,7 @@ export default {
 
         <div class="flex items-center gap-3 rounded-lg bg-slate-900 p-2 ring-1 ring-white/10">
           <label class="flex items-center gap-2 text-sm">
-            <span class="text-slate-400">Message type</span>
+            <span class="text-slate-400">Type</span>
             <select
               v-model="payloadType"
               class="rounded-lg bg-slate-800 px-2 py-1.5 text-sm ring-1 ring-white/10 focus:ring-indigo-400 outline-none"

@@ -69,8 +69,7 @@ const RootComponent = {
 
       <div
         v-if="settings.topic"
-        class="fixed left-2 z-[60] max-w-[40vw] truncate rounded-full bg-black/40 backdrop-blur px-3 py-1 text-xs text-white/60 pointer-events-none"
-        style="bottom: calc(env(safe-area-inset-bottom, 0px) + 0.5rem);"
+        class="fixed left-2 bottom-2 z-[60] max-w-[40vw] truncate rounded-full bg-black/40 backdrop-blur px-3 py-1 text-xs text-white/60 pointer-events-none"
         :title="settings.topic"
       >{{ settings.topic }}</div>
     </div>
