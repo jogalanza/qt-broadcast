@@ -12,6 +12,7 @@ const BASE_SCROLL_SPEED = 60;
 const BASE_MARQUEE_SPEED = 110;
 const CLOCK_TICK_MS = 15000;
 const COUNTDOWN_RE = /^\[countdown:(\d{1,2}):(\d{1,2}):(\d{1,2})\]$/;
+const FONT_COLOR_RE = /^#[0-9a-fA-F]{6}$/;
 
 function formatTimeAgo(ms) {
   const seconds = Math.floor(ms / 1000);
@@ -92,13 +93,14 @@ export default {
       const color = /^#[0-9a-fA-F]{6}$/.test(payload.bgColor || '') ? payload.bgColor : IDLE_COLOR;
 
       const countdownMatch = (payload.text || '').trim().match(COUNTDOWN_RE);
+      const fontColor = FONT_COLOR_RE.test(payload.fontColor || '') ? payload.fontColor : '#ffffff';
 
       runFlash(color, settings.flashDurationMs, () => {
         if (myGen !== generation) return;
         if (countdownMatch) {
           const totalSeconds =
             Number(countdownMatch[1]) * 3600 + Number(countdownMatch[2]) * 60 + Number(countdownMatch[3]);
-          startCountdown(totalSeconds, color, () => {
+          startCountdown(totalSeconds, color, fontColor, () => {
             if (myGen !== generation) return;
             runFlash(color, settings.flashDurationMs, () => {});
           });
@@ -147,7 +149,10 @@ export default {
         v-show="!waiting && countdownState.active"
         class="receiver-window w-[96vw] flex items-center justify-center"
       >
-        <span class="receiver-text text-white font-bold">{{ countdownState.text }}</span>
+        <span
+          class="receiver-text font-bold"
+          :style="{ color: countdownState.fontColor || '#ffffff' }"
+        >{{ countdownState.text }}</span>
       </div>
 
       <div

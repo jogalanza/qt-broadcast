@@ -9,6 +9,7 @@ export const countdownState = Vue.reactive({
   active: false,
   text: '',
   bgColor: null,
+  fontColor: null,
 });
 
 let interval = null;
@@ -29,17 +30,19 @@ export function stopCountdown() {
   if (interval) clearInterval(interval);
   interval = null;
   countdownState.active = false;
+  countdownState.fontColor = null;
 }
 
 // Wall-clock-based (endAt, not a decrementing counter) so it's immune to
 // setInterval throttling while the tab/app is backgrounded — the next tick
 // after resuming just recomputes the correct remaining time instead of
 // drifting or freezing.
-export function startCountdown(totalSeconds, color, onExpire) {
+export function startCountdown(totalSeconds, color, fontColor, onExpire) {
   stopCountdown();
   endAt = Date.now() + totalSeconds * 1000;
   countdownState.active = true;
   countdownState.bgColor = color;
+  countdownState.fontColor = fontColor;
 
   const tick = () => {
     const remaining = Math.max(0, Math.round((endAt - Date.now()) / 1000));

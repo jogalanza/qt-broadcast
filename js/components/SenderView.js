@@ -136,6 +136,7 @@ export default {
         html: tag,
         text: tag,
         bgColor: bgColor.value,
+        fontColor: fontColor.value,
         timestamp: Date.now(),
       });
       sentFlash.value = true;
@@ -269,6 +270,13 @@ export default {
               @click="countdownModalOpen = true"
               class="rounded-lg bg-slate-800 px-4 py-2 text-sm font-medium text-slate-200 hover:bg-slate-700 transition"
             >Set duration…</button>
+          </div>
+
+          <div class="flex items-center gap-2 rounded-lg bg-slate-900 p-2 ring-1 ring-white/10">
+            <div class="flex items-center gap-2 text-sm">
+              <span class="text-slate-400">Text</span>
+              <input v-model="fontColor" type="color" class="h-8 w-10 cursor-pointer rounded bg-transparent" />
+            </div>
           </div>
 
           <div class="flex gap-2">
